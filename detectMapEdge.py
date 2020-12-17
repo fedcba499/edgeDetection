@@ -11,9 +11,8 @@ import sys
 directory = "D:\CBRN\maps5"
 
 for filename in os.listdir(directory):
-    # filename = os.fsdecode(file)
+
     if filename.endswith(".png"): 
-        # print(os.path.join(directory, filename))
         print(filename)
 
         out_file = filename
@@ -28,60 +27,37 @@ for filename in os.listdir(directory):
 
         img = cv2.resize(img2, (0,0), fx=0.2, fy=0.2)
 
-        # result = cv2.fastNlMeansDenoisingColored(img,None,20,10,7,21)
+        greyScale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)  
 
-        greyScale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+        blurImg = cv2.blur(greyScale, (5,5))  
 
-        # result = cv2.addWeighted(img,2, np.zeros(img.shape, img.dtype), 0, 0)
+        edgeImg = cv2.Canny(blurImg, 100,200)
 
-        # result = cv2.GaussianBlur(result,(3,3),0)
+        pts = np.argwhere(edgeImg>0)
+        y1,x1 = pts.min(axis=0)
+        y2,x2 = pts.max(axis=0)
 
-        #adding threshoulding function
+        # crop the region
+        cropped = img2[y1*5:y2*5, x1*5:x2*5]
+        cv2.imwrite(out_file, cropped)
 
-        ret, thresh1 = cv2.threshold(greyScale, 220, 255, cv2.THRESH_BINARY)
 
-        edgeImg = cv2.Canny(thresh1, 100,200)
 
-        contours,hierarchy=cv2.findContours(edgeImg,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)  
-        #retrieve the contours as a list, with simple apprximation model
+        # cv2.imshow("edges are",edgeImg)
 
-        contours=sorted(contours,key=cv2.contourArea,reverse=True)
-        #the loop extracts the boundary contours of the page
 
-        for c in contours:
-            p=cv2.arcLength(c,True)
-            approx=cv2.approxPolyDP(c,0.02*p,True)
-
-            if len(approx)==4:
-                target=approx
-                break
-        approx=mapper.mapp(target)
-        #find endpoints of the sheet
-
-        print(approx)
-
-        approx1 = [[(j*5) for j in i] for i in approx]
-        #scale to get original pts
-
-        approx1 = np.float32(approx1)
-
-        pts=np.float32([[0,0],[3600,0],[3600,2400],[0,2400]])  
-        #map to 800*800 target window
-
-        op=cv2.getPerspectiveTransform(approx1,pts)  
-        #get the top or bird eye view effect
-
-        dst=cv2.warpPerspective(img2,op,(3600,2400))
-
-        cv2.imshow("edges are",edgeImg)
-
-        cv2.imshow(out_file, dst)
 
 
 
         # cv2.imwrite(out_file, dst)
 
-        cv2.waitKey(0)
+        # cv2.waitKey(30)
+
+        cv2.waitKey(1000) 
+        cv2.destroyAllWindows() 
+
+
+
 
         
         
