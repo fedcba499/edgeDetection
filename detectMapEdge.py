@@ -32,11 +32,15 @@ for filename in os.listdir(directory):
 
         greyScale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-        result = cv2.addWeighted(img,2, np.zeros(img.shape, img.dtype), 0, 0)
+        # result = cv2.addWeighted(img,2, np.zeros(img.shape, img.dtype), 0, 0)
 
-        result = cv2.GaussianBlur(result,(3,3),0)
+        # result = cv2.GaussianBlur(result,(3,3),0)
 
-        edgeImg = cv2.Canny(result, 100,200)
+        #adding threshoulding function
+
+        ret, thresh1 = cv2.threshold(greyScale, 220, 255, cv2.THRESH_BINARY)
+
+        edgeImg = cv2.Canny(thresh1, 100,200)
 
         contours,hierarchy=cv2.findContours(edgeImg,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)  
         #retrieve the contours as a list, with simple apprximation model
@@ -71,13 +75,13 @@ for filename in os.listdir(directory):
 
         cv2.imshow("edges are",edgeImg)
 
-        # cv2.imshow(out_file, dst)
+        cv2.imshow(out_file, dst)
 
 
 
         # cv2.imwrite(out_file, dst)
 
-        cv2.waitKey(100)
+        cv2.waitKey(0)
 
         
         
