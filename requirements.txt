@@ -1,3 +1,4 @@
 requirements for edge detection program
 1. opencv 
     (a) for canny edge detection
+2. mapper - written by someone
