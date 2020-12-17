@@ -8,7 +8,7 @@ import os
 
 import sys
 
-directory = "D:\CBRN\maps6"
+directory = "D:\CBRN\maps5"
 
 for filename in os.listdir(directory):
     # filename = os.fsdecode(file)
@@ -17,12 +17,12 @@ for filename in os.listdir(directory):
         print(filename)
 
         out_file = filename
-        in_file = filename
+        in_file = filename.split('.')[0]+".jpg"
 
 
         img2 = cv2.imread(in_file)
 
-        # img2 = img2[0:3350, 0:5000]
+        img2 = img2[0:3350, 0:5000]
 
         #resize image to 1:5
 
@@ -32,9 +32,11 @@ for filename in os.listdir(directory):
 
         greyScale = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
-        # result = cv2.GaussianBlur(greyScale,(3,3),0)
+        result = cv2.addWeighted(img,2, np.zeros(img.shape, img.dtype), 0, 0)
 
-        edgeImg = cv2.Canny(greyScale, 100,200)
+        result = cv2.GaussianBlur(result,(3,3),0)
+
+        edgeImg = cv2.Canny(result, 100,200)
 
         contours,hierarchy=cv2.findContours(edgeImg,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)  
         #retrieve the contours as a list, with simple apprximation model
@@ -67,15 +69,15 @@ for filename in os.listdir(directory):
 
         dst=cv2.warpPerspective(img2,op,(3600,2400))
 
-        cv2.imshow("original",img)
+        cv2.imshow("edges are",edgeImg)
 
-        cv2.imshow(out_file, dst)
+        # cv2.imshow(out_file, dst)
 
 
 
         # cv2.imwrite(out_file, dst)
 
-        cv2.waitKey(0)
+        cv2.waitKey(100)
 
         
         
